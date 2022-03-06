@@ -14,7 +14,7 @@ git clone https://github.com/elbachir-one/ArchMega
 
 ### Step 4: copy the "ArchMega.sh" to the root.
 
-cp Scripts/ArchMega.sh /root
+cp ArchMega/ArchMega.sh /root
 
 ### Step 5: make the script executable.
 

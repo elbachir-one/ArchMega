@@ -1,5 +1,5 @@
 # This is ArchMega.
-** ArchMega is a Script to Install ArchLinux.
+** ArchMega is a Script to Install ArchLinux. **
 ### Step 1: loading your keyboard layout.
 
 loadkey ...
@@ -28,4 +28,4 @@ Note1: The script is going to launch cfdisk and you have to creat 3 partition, t
 
 Note2: After the installation is finished you need to reboot the system.
 
-*** Et voilà
+*** Et voilà ***

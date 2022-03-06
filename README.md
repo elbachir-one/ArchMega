@@ -10,7 +10,7 @@ pacman -Sy git
 
 ### Step 3: clone the script.
 
-git clone https://github.com/elbachir-one/Scripts
+git clone https://github.com/elbachir-one/ArchMega
 
 ### Step 4: copy the "ArchMega.sh" to the root.
 

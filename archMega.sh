@@ -5,14 +5,14 @@ pacman --noconfirm -Sy archlinux-keyring
 timedatectl set-ntp true
 lsblk
 cfdisk
-mkfs.ext4 /dev/vda3
-mount /dev/vda3 /mnt
+mkfs.ext4 /dev/sda3
+mount /dev/sda3 /mnt
 mkdir /mnt/boot
-mkfs.vfat -F32 /dev/vda1
-mount /dev/vda1 /mnt/boot
-mkswap /dev/vda2
-swapon /dev/vda2
-pacstrap /mnt base linux
+mkfs.vfat -F32 /dev/sda1
+mount /dev/sda1 /mnt/boot
+mkswap /dev/sda2
+swapon /dev/sda2
+pacstrap /mnt base base-devel linux linux-firmware
 genfstab -U /mnt >> /etc/fstab
 sed '1,/^#part2$/d' `basename $0` > /mnt/archMega.sh
 chmod +x /mnt/archMega.sh

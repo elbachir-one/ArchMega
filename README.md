@@ -12,17 +12,17 @@ pacman -Sy git
 
 git clone https://github.com/elbachir-one/ArchMega
 
-### Step 4: copy the "ArchMega.sh" to the root.
+### Step 4: copy the "archMega.sh" to the root.
 
-cp ArchMega/ArchMega.sh /root
+cp ArchMega/archMega.sh /root
 
 ### Step 5: make the script executable.
 
-chmod +x ArchMega.sh
+chmod +x archMega.sh
 
 ### Step 6: run the script.
 
-./ArchMega.sh
+./archMega.sh
 
 Note1: The script is going to launch cfdisk and you have to creat 3 partition, the first one is EFI and the second is the SWAP partition and the 3 is the filesystem in this order.
 

@@ -1,6 +1,6 @@
 #part1
 printf '\033c'
-echo "Welcome to Arch Magic"
+echo "Welcome to Arch Mega"
 pacman --noconfirm -Sy archlinux-keyring
 timedatectl set-ntp true
 lsblk
@@ -14,9 +14,9 @@ mkswap /dev/vda2
 swapon /dev/vda2
 pacstrap /mnt base linux
 genfstab -U /mnt >> /etc/fstab
-sed '1,/^#part2$/d' `basename $0` > /mnt/archMagic.sh
-chmod +x /mnt/archMagic.sh
-arch-chroot /mnt ./archMagic.sh
+sed '1,/^#part2$/d' `basename $0` > /mnt/archMega.sh
+chmod +x /mnt/archMega.sh
+arch-chroot /mnt ./archMega.sh
 exit
 
 #part2
@@ -29,7 +29,7 @@ locale-gen
 touch /etc/locale.conf
 echo "LANG=en_US.UTF-8" > /etc/locale.conf
 touch /etc/vconsole.conf
-echo "KEYMAP=fr" >> /etc/vconsole.conf
+echo "KEYMAP=us" > /etc/vconsole.conf
 echo "FONT=ter-d18b" > /etc/vconsole.conf
 echo "Root passwd: "
 passwd root

@@ -1,5 +1,5 @@
 # This is ArchMega.
-** ArchMega is a Script to Install ArchLinux. **
+** archMega.sh is a Script to Install ArchLinux. **
 ### Step 1: loading your keyboard layout.
 
 loadkey ...
@@ -31,7 +31,7 @@ Note2: After the installation is finished you need to reboot the system.
 *** Et voilà ***
 
 # This is Suckless Power.
-** suckLess is a Script to SetUp The Suckless Tools. **
+** suckLess.sh is a Script to SetUp The Suckless Tools. **
 ## Step1: make the script executable.
 chmod +x suckLess.sh
 

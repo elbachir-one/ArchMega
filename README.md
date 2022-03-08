@@ -29,3 +29,15 @@ Note1: The script is going to launch cfdisk and you have to creat 3 partition, t
 Note2: After the installation is finished you need to reboot the system.
 
 *** Et voilà ***
+
+# This is Suckless Power.
+** suckLess is a Script to SetUp The Suckless Tools. **
+## Step1: make the script executable.
+chmod +x suckLess.sh
+
+## Step2: run the script.
+./suckLess.sh
+
+Note: At the end your pc is going to reboot.
+
+Thank you.

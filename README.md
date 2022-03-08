@@ -32,6 +32,9 @@ Note2: After the installation is finished you need to reboot the system.
 
 # This is Suckless Power.
 ** suckLess.sh is a Script to SetUp The Suckless Tools. **
+
+Note: Make sure you login with your user name.
+
 ## Step1: make the script executable.
 chmod +x suckLess.sh
 

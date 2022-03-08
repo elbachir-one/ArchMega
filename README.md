@@ -34,11 +34,14 @@ Note2: After the installation is finished you need to reboot the system.
 ** suckLess.sh is a Script to SetUp The Suckless Tools. **
 
 Note: Make sure you login with your user name.
+## Step1: git the script.
+git clone https://github.com/elbachir-one/ArchMega
 
-## Step1: make the script executable.
+## Step2: copy the script to your home directory and make it executable.
+cp ArchMega/suckLess.sh
 chmod +x suckLess.sh
 
-## Step2: run the script.
+## Step3: run the script.
 ./suckLess.sh
 
 Note: At the end your pc is going to reboot.

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Arch Mega Installer
+# --- Arch Linux Auto Installer ---
 
 # ========================
 # part1: Base installation
@@ -9,32 +9,48 @@ setfont -d
 printf '\033c'
 echo "Welcome to Arch Mega"
 
-device="/dev/vda"
+# Show available drives
+lsblk -d -o NAME,SIZE,MODEL
+echo
+read -rp "Enter the drive to install Arch on (e.g., sda, vda, nvme0n1): " drive
+device="/dev/$drive"
+
+echo "You selected: $device"
+echo "WARNING: This will ERASE ALL DATA on $device!"
+read -rp "Are you sure you want to continue? (yes/NO): " confirm
+
+if [[ "$confirm" != "yes" ]]; then
+	echo "Aborted."
+	exit 1
+fi
+
+echo "Selected device: $device"
 
 # Update keyring
-
-# Update system and partition
 sed -i 's/^#Color/Color/' /etc/pacman.conf
 sed -i 's/^#\?ParallelDownloads.*/ParallelDownloads = 1/' /etc/pacman.conf
 pacman -Sy --noconfirm
 pacman --noconfirm -S archlinux-keyring
 
 # Partition the disk
-parted --script "${device}" -- mklabel gpt \
-  mkpart ESP fat32 1Mib 1024MiB \
-  set 1 esp on \
-  mkpart primary 1024MiB 100%
+parted --script "$device" -- mklabel gpt \
+	mkpart ESP fat32 1MiB 1024MiB \
+	set 1 esp on \
+	mkpart primary 1024MiB 100%
 
 # Format boot
-mkfs.fat -F32 /dev/vda1
-mkfs.ext4 /dev/vda2
+mkfs.fat -F32 "${device}1"
+mkfs.ext4 "${device}2"
 
-mount /dev/vda2 /mnt
+mount "${device}2" /mnt
 mkdir /mnt/boot
-mount /dev/vda1 /mnt/boot
+mount "${device}1" /mnt/boot
 
 # Install base system
-pacstrap -K /mnt linux linux-firmware linux-headers base base-devel vim terminus-font efibootmgr git go
+pacstrap -K /mnt linux linux-firmware linux-headers base base-devel vim \
+	terminus-font efibootmgr git go networkmanager iwd openssh mtools ntfs-3g \
+	dosfstools reflector intel-ucode amd-ucode bluez bluez-utils alsa-utils \
+	bash-completion nano
 
 # Generate fstab
 genfstab -U /mnt > /mnt/etc/fstab
@@ -56,12 +72,21 @@ printf '\033c'
 
 # Variables
 rootpassword="arch"
-username="sh"
+username="arch"
 userpassword="arch"
 hostname="ARCH"
 
+# Prompt for bootloader
+echo "Which bootloader do you want to use?"
+echo "1) systemd-boot (default)"
+echo "2) GRUB"
+read -rp "Enter choice [1-2]: " boot_choice
+boot_choice=${boot_choice:-1}  # default to systemd-boot
+
 # Timezone
-ln -sf /usr/share/zoneinfo/Africa/Casablanca /etc/localtime
+zone=$(curl -sf https://ipapi.co/timezone/)
+
+ln -sf /usr/share/zoneinfo/$zone /etc/localtime
 hwclock --systohc
 
 # Locale
@@ -71,7 +96,7 @@ echo "LANG=en_US.UTF-8" > /etc/locale.conf
 
 # Console keymap & font
 echo "KEYMAP=fr" > /etc/vconsole.conf
-echo "FONT=ter-d18b" >> /etc/vconsole.conf
+echo "FONT=ter-128n" >> /etc/vconsole.conf
 
 # Pacman config
 sed -i 's/^#Color/Color/' /etc/pacman.conf
@@ -84,48 +109,48 @@ echo "$hostname" > /etc/hostname
 echo "root:$rootpassword" | chpasswd
 
 # Create user
-useradd -m -s /bin/bash "$username"
+useradd -mG wheel "$username"
 echo "$username:$userpassword" | chpasswd
-usermod -aG wheel "$username"
 
 # Enable wheel group sudo
 sed -i 's/^[[:space:]]*# %wheel ALL=(ALL:ALL) ALL/%wheel ALL=(ALL:ALL) ALL/' /etc/sudoers
 
+# Hosts
 cat <<EOF > /etc/hosts
 127.0.0.1       localhost
 ::1             localhost
 127.0.1.1       $hostname.localdomain $hostname
 EOF
 
-# Network
-cat > /etc/systemd/network/en.network <<EOF
-[Match]
-Name=en*
-[Network]
-DHCP=ipv4
-EOF
-
 systemctl enable systemd-networkd
 systemctl enable systemd-resolved
 systemctl enable systemd-timesyncd
+systemctl enable NetworkManager
+systemctl enable sshd
+systemctl enable bluetooth
 
-# Systemd Boot
-bootctl install
-
-UUID=$(blkid -o value -s UUID /dev/vda2)
-
-cat > /boot/loader/loader.conf <<EOF
+# Bootloader installation
+if [ "$boot_choice" -eq 1 ]; then
+	# systemd-boot
+	bootctl install
+	UUID=$(awk '$2=="/" {sub("UUID=","",$1); print $1}' /etc/fstab)
+	cat > /boot/loader/loader.conf <<EOF
 default arch
 timeout 5
 console-mode max
 EOF
-
 cat > /boot/loader/entries/arch.conf <<EOF
 title Arch Linux
 linux /vmlinuz-linux
 initrd /initramfs-linux.img
-options root=UUID=$UUID rw video="1360x768"
+options root=UUID=$UUID rw
 EOF
+else
+	# GRUB
+	pacman -S --noconfirm grub
+	grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=GRUB
+	grub-mkconfig -o /boot/grub/grub.cfg
+fi
 
 # DNS
 cat > /etc/resolv.conf <<EOF
@@ -133,13 +158,9 @@ nameserver 1.1.1.1
 nameserver 8.8.8.8
 EOF
 
-# Re-build the Iinitramfs
+# Re-build the initramfs
 mkinitcpio -P
 
-# Set up YAY
-git clone https://aur.archlinux.org/yay
-cd yay/ && makepkg -si
-cd .. && rm -rf yay/
-
 echo "Installation complete! Type reboot."
+echo "User name $username and password is $userpassword also the root password is $rootpassword"
 exit

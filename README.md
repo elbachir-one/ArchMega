@@ -1,5 +1,6 @@
 # This is ArchMega.
-** archMega.sh is a Script to Install ArchLinux. **
+** `archMega.sh` is a Script to Install ArchLinux. **
+
 ### Step 1: loading your keyboard layout.
 
 loadkey ...
